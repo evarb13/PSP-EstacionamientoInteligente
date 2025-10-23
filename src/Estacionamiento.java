@@ -7,17 +7,21 @@ public class Estacionamiento {
     private final Semaphore semaphore = new Semaphore(5);
     private final ArrayList<Coche> cochesAparcados = new ArrayList<>();
 
-    synchronized boolean entrar (Coche coche){
-        if (cochesAparcados.size() < capacidadMax){
+    synchronized boolean entrar (Coche coche) {
+        if (cochesAparcados.size() < capacidadMax) {
             cochesAparcados.add(coche);
             return true;
         } else {
-            if (coche.esVip()){
-                desalojarCocheNormal(coche);
-                cochesAparcados.add(coche);
-                return true;
-            } else {
-                semaphore.tryAcquire();
+            try {
+                if (semaphore.tryAcquire(5, TimeUnit.SECONDS)) {
+                    if (coche.esVip()) {
+                        desalojarCocheNormal(coche);
+                        cochesAparcados.add(coche);
+                        return true;
+                    }
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
         return false;
