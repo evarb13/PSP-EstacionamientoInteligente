@@ -8,21 +8,24 @@ public class Estacionamiento {
     private final ArrayList<Coche> cochesAparcados = new ArrayList<>();
 
     synchronized boolean entrar (Coche coche) {
-        if (cochesAparcados.size() < capacidadMax) {
-            cochesAparcados.add(coche);
-            return true;
-        } else {
-            try {
-                if (semaphore.tryAcquire(5, TimeUnit.SECONDS)) {
+        try{
+            if (semaphore.tryAcquire(5, TimeUnit.SECONDS)){
+                if (cochesAparcados.size() < capacidadMax) {
+                    cochesAparcados.add(coche);
+                    System.out.println(coche+ " Ha entrado un coche");
+                    return true;
+                } else {
                     if (coche.esVip()) {
                         desalojarCocheNormal(coche);
                         cochesAparcados.add(coche);
+                        System.out.println(coche+ " Ha entrado un coche vip");
                         return true;
                     }
                 }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
             }
+
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         return false;
     }
@@ -30,6 +33,7 @@ public class Estacionamiento {
     synchronized void salir (Coche coche){
         cochesAparcados.remove(coche);
         semaphore.release();
+
     }
 
     void desalojarCocheNormal (Coche cocheVip) {
