@@ -16,14 +16,15 @@ public class Coche extends Thread{
     @Override
     public void run(){
         boolean aparcado = estacionamiento.entrar(this);
-        double numero = (Math.random()* 4 + 2);
+        double numero = (Math.random()* 20+10);
 
         try{
             if (aparcado){
                 Thread.sleep((long)(numero*1000));
-                System.out.println(this+" Ha salido");
+                System.out.println(this+" coche ha salido");
             } else {
                 System.out.println(this+ " No ha logrado entar");
+                estacionamiento.contadorCochesNoAparcados++;
             }
 
         } catch (InterruptedException e) {
