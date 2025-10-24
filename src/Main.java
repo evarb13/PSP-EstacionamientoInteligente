@@ -18,6 +18,8 @@ public class Main {
                 coche.start();
             }
 
+
+            //HOLA
             for (Coche coche:coches){
                 coche.join();
             }
